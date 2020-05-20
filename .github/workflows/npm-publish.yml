@@ -1,0 +1,29 @@
+name: npm-publish
+on:
+  push:
+    branches:
+      - '*'
+
+jobs:
+  npm-publish:
+    name: npm-publish
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12'
+        registry-url: 'https://npm.pkg.github.com'
+    - run: npm install
+    - run: |
+        sed -e '/"private".*/d' package.json -i
+
+        sed -e 's/"version": "\(.*\)"/"version": "\1.${{ github.sha }}"/' package.json -i
+
+        sed -e 's!"name": "@\(.*\)/\(.*\)"!"name": "@${{ github.event.repository.owner.login }}/\1-\2"!' package.json -i
+
+        sed -e 's!https://github.com/apollographql/apollo-client!https://github.com/${{github.repository}}!' package.json -i
+    - run: npm build
+    - run: npm publish
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
