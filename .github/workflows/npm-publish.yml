@@ -23,7 +23,7 @@ jobs:
         sed -e 's!"name": "@\(.*\)/\(.*\)"!"name": "@${{ github.event.repository.owner.login }}/\1-\2"!' package.json -i
 
         sed -e 's!https://github.com/apollographql/apollo-client!https://github.com/${{github.repository}}!' package.json -i
-    - run: npm build
+    - run: npm run-script build
     - run: npm publish
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
