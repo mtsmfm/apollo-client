@@ -13,7 +13,7 @@ jobs:
     - uses: actions/setup-node@v1
       with:
         node-version: '12'
-        registry-url: 'https://npm.pkg.github.com'
+        registry-url: 'https://registry.npmjs.org'
     - run: npm install
     - run: |
         sed -e '/"private".*/d' package.json -i
@@ -24,6 +24,13 @@ jobs:
 
         sed -e 's!https://github.com/apollographql/apollo-client!https://github.com/${{github.repository}}!' package.json -i
     - run: npm build
+    - run: npm publish
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12'
+        registry-url: 'https://npm.pkg.github.com'
     - run: npm publish
       env:
         NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
